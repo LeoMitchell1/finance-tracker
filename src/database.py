@@ -41,29 +41,38 @@ def add_transaction_to_db(t):
     conn.close()
 
 
-def update_transaction_to_db(transaction_id, date=None, category=None, amount=None, currency=None):
+def update_transaction_to_db(t):
     conn = get_connection()
     cursor = conn.cursor()
+
+    # print(f"ID: {transaction_id}, date: {date}, category: {category}, amount: {amount}, currency: {currency}")
 
     fields = []
     values = []
 
     # Error checking for values
-    if date is not None:
+    if t.date is not None:
         fields.append("date = ?")
-        values.append(date)
-    if category is not None:
+        values.append(t.date)
+    if t.category is not None:
         fields.append("category = ?")
-        values.append(category)
-    if amount is not None:
+        values.append(t.category)
+    if t.amount is not None:
         fields.append("amount = ?")
-        values.append(amount)
-    if currency is not None:
+        values.append(float(t.amount))
+    if t.currency is not None:
         fields.append("currency = ?")
-        values.append(currency)
+        values.append(t.currency)
 
+    if not fields:
+        print("No fields to update.")
+        return
+
+    print(f"Updating transaction ID {t.id} with fields: {fields}")
     sql = f"UPDATE transactions SET {', '.join(fields)} WHERE id = ?"
-    values.append(transaction_id)
+    values.append(t.id)
+
+    print(f"Executing SQL: {sql} with values: {values}")
 
     cursor.execute(sql, tuple(values))
     conn.commit()
@@ -74,11 +83,23 @@ def delete_transaction_in_db(t):
     conn = get_connection()
     cursor = conn.cursor()
 
+    print(f"Deleting transaction with ID: {t.id}")
+
     cursor.execute("""
         DELETE FROM transactions
         WHERE id = ?
         """, (t.id,))
     
+    conn.commit()
+    conn.close()
+
+
+def clear_transactions():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM transactions")
+
     conn.commit()
     conn.close()
 

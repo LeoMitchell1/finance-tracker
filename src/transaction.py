@@ -9,7 +9,7 @@ class Transaction:
         "INR": "₹"
     }
 
-    def __init__(self, amount, currency, date, category, id=None):
+    def __init__(self, date, category, amount, currency, id=None):
         self.id = id
         self.amount = amount
         self.currency = currency
@@ -20,8 +20,8 @@ class Transaction:
         return self.CURRENCY_SYMBOLS.get(self.currency.upper(), self.currency)
 
     def __repr__(self):
-        return f"Transaction('{self.amount}', '{self.currency}', {self.amount}, '{self.date}')"
+        return f"Transaction('{self.date}', '{self.category}', {self.amount}, '{self.currency}')"
 
     def __str__(self):
         symbol = self.get_symbol()
-        return f"{self.date}: {self.category} - {symbol}{self.amount:.2f}"
+        return f"| ID: {self.id} | Date: {self.date} | Category: {self.category} | Amount: {symbol}{self.amount:.2f} |"

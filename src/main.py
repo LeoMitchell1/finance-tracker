@@ -1,11 +1,11 @@
 from transaction import Transaction
-from database import initialise_database, add_transaction_to_db, update_transaction_to_db, delete_transaction_in_db, get_all_transactions
+from database import initialise_database, add_transaction_to_db, update_transaction_to_db, delete_transaction_in_db, clear_transactions, get_all_transactions
 
 
 def add_transaction():
     amount = float(input("Enter amount: "))
     currency = input("Enter currency (e.g., USD, EUR): ")
-    date = input("Enter date (YYYY-MM-DD): ")
+    date = input("Enter date (DD-MM-YYYY): ")
     category = input("Enter category (e.g., Food, Rent): ")
 
     transaction = Transaction(amount, currency, date, category)
@@ -19,13 +19,18 @@ def edit_transaction():
 
     for t in get_all_transactions():
         if t[0] == transaction_id:
-            transaction = Transaction(t[1], t[2], t[3], t[4])
+            transaction = Transaction(t[1], t[2], t[3], t[4], t[0])
             break
 
-    amount = float(input("Enter new amount (or leave blank to keep current): ") or 0)
-    currency = input("Enter new currency (or leave blank to keep current): ")
-    date = input("Enter new date (YYYY-MM-DD) (or leave blank to keep current): ")
-    category = input("Enter new category (or leave blank to keep current): ")
+    else:
+        print("Transaction not found.\n")
+        return
+
+    amount_input = input("Enter new amount (or leave blank to keep current): ")
+    amount = float(amount_input) if amount_input.strip() else None
+    currency = input("Enter new currency (or leave blank to keep current): ").strip() or None
+    date = input("Enter new date (DD-MM-YYYY) (or leave blank to keep current): ").strip() or None
+    category = input("Enter new category (or leave blank to keep current): ").strip() or None
 
     if amount is not None:
         transaction.amount = amount
@@ -36,12 +41,28 @@ def edit_transaction():
     if category is not None:
         transaction.category = category
 
+    print(f"\nTransaction before update: {transaction}")
+
     update_transaction_to_db(transaction)
-    print(f"Updated transaction: {transaction}\n", transaction)
+    print(f"Updated transaction: {transaction}\n")
 
 
-def delete_transaction(transaction):
+def delete_transaction():
+    display_transactions()
+    transaction_id = int(input("Enter transaction ID to edit: "))
+
+    for t in get_all_transactions():
+        if t[0] == transaction_id:
+            transaction = Transaction(t[1], t[2], float(t[3]), t[4], t[0])
+            break
+
+    else:
+        print("Transaction not found.\n")
+        return
+
+    print(f"Deleting transaction: {transaction}\n")
     delete_transaction_in_db(transaction)
+
     print(f"Deleted transaction successfully.\n")
 
 
@@ -52,6 +73,7 @@ def display_transactions():
         print("No transactions found.\n")
         return
 
+    print("\n")
     print("ID | Date       | Category    | Amount  | Currency")
     print("---|------------|-------------|---------|---------")
     for t in transactions:
@@ -74,9 +96,10 @@ def main():
             "2. Edit Transaction\n" +
             "3. Delete Transaction\n" +
             "4. View Transactions\n" +
-            "5. Visualise Transactions\n" +
-            "6. Analyse Spending\n" +
-            "7. Exit\n")
+            "5. Clear All Transactions\n" +
+            "6. Visualise Transactions\n" +
+            "7. Analyse Spending\n" +
+            "8. Exit\n")
         
         choice = input()
 
@@ -89,12 +112,17 @@ def main():
         elif choice == "4":
             display_transactions()
         elif choice == "5":
-            pass  # Placeholder for visualisation feature
+            clear_transactions()
+            print("All transactions cleared.\n")
         elif choice == "6":
-            pass  # Placeholder for analysis feature
+            pass  # Placeholder for visualisation feature
         elif choice == "7":
+            pass  # Placeholder for analysis feature
+        elif choice == "8":
             running = False
             print("Exiting Finance Tracker. Goodbye!")
+        else:
+            print("Invalid choice. Please try again.\n")
 
 
 if __name__ == "__main__":

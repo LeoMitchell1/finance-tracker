@@ -41,10 +41,8 @@ def edit_transaction():
     if category is not None:
         transaction.category = category
 
-    print(f"\nTransaction before update: {transaction}")
-
     update_transaction_to_db(transaction)
-    print(f"Updated transaction: {transaction}\n")
+    print(f"Updated transaction to: {transaction}\n")
 
 
 def delete_transaction():
@@ -59,10 +57,8 @@ def delete_transaction():
     else:
         print("Transaction not found.\n")
         return
-
-    print(f"Deleting transaction: {transaction}\n")
+    
     delete_transaction_in_db(transaction)
-
     print(f"Deleted transaction successfully.\n")
 
 
@@ -102,6 +98,7 @@ def main():
             "8. Exit\n")
         
         choice = input()
+        print("\n")
 
         if choice == "1":
             add_transaction()
@@ -117,7 +114,7 @@ def main():
         elif choice == "6":
             pass  # Placeholder for visualisation feature
         elif choice == "7":
-            pass  # Placeholder for analysis feature
+            pass  # Placeholder for ML analysis feature
         elif choice == "8":
             running = False
             print("Exiting Finance Tracker. Goodbye!")
